@@ -1,0 +1,48 @@
+name: Release
+
+# Changesets flow: merging changeset files into main opens/updates a
+# "Version Packages" PR; merging THAT PR tags the release (v1.2.3), creates its
+# GitHub Release from CHANGELOG.md, and moves the major tag (v1) users pin to.
+# Nothing is published to npm: an action runs from this repository at a tag.
+# Listing a release on the GitHub Marketplace is a checkbox on the release
+# page (see CONTRIBUTING.md); GitHub offers no API for it.
+on:
+  push:
+    branches: [main]
+
+concurrency: release-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/setup@v3
+        with:
+          cache: true
+          require-lockfile: true
+
+      - name: Create release PR or tag the release
+        id: changesets
+        uses: changesets/action@v2
+        with:
+          publish-script: pnpm release
+
+      - name: Move the major version tag
+        if: steps.changesets.outputs.published == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(jq -r .version package.json)
+          MAJOR="v${VERSION%%.*}"
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$MAJOR" >/dev/null 2>&1; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/$MAJOR" -f sha="$GITHUB_SHA" -F force=true
+          else
+            gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/tags/$MAJOR" -f sha="$GITHUB_SHA"
+          fi
+          echo "$MAJOR now points to v$VERSION ($GITHUB_SHA)"

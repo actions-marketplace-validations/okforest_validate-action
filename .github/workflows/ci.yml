@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# A newer push to the same branch/PR cancels the in-progress run.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # One step for the whole toolchain: installs pnpm (version from the
+      # "packageManager" field), Node (from "devEngines.runtime"), restores the
+      # store cache, and runs the install with --frozen-lockfile.
+      - uses: pnpm/setup@v3
+        with:
+          cache: true
+          require-lockfile: true
+
+      # Separate steps so a failing check is obvious in the GitHub UI.
+      - run: pnpm build
+
+      # GitHub runs the committed dist/ (there is no install step for an
+      # action), so it must be exactly what the build produces from main.
+      - name: Check dist/ is up to date
+        id: dist
+        run: |
+          if [ -n "$(git status --porcelain dist)" ]; then
+            echo "::error::dist/ is out of date. Run pnpm build and commit dist/."
+            git status --short dist
+            exit 1
+          fi
+      - if: failure() && steps.dist.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+      - run: pnpm test:coverage
+      - run: pnpm typecheck
+      - run: pnpm check
+
+      - uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/lcov.info
+          disable_search: true
+
+  # Run the action itself, from this commit, the way users do. The clean tree
+  # has a D2 block, so every OS downloads, verifies, and extracts D2.
+  self-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate a clean tree
+        id: clean
+        uses: ./
+        with:
+          path: fixtures/clean
+
+      - name: Validate a broken tree (report only)
+        id: broken
+        uses: ./
+        with:
+          path: fixtures/broken
+          fail-on: never
+          annotations: false
+
+      - name: Check the outputs and the report
+        shell: bash
+        env:
+          CLEAN_OK: ${{ steps.clean.outputs.ok }}
+          BROKEN_OK: ${{ steps.broken.outputs.ok }}
+          BROKEN_ERRORS: ${{ steps.broken.outputs.errors }}
+          REPORT: ${{ steps.broken.outputs.report }}
+        run: |
+          test "$CLEAN_OK" = true
+          test "$BROKEN_OK" = false
+          test "$BROKEN_ERRORS" = 4
+          node -e '
+            const report = JSON.parse(require("fs").readFileSync(process.env.REPORT, "utf8"))
+            const rules = report.findings.map((f) => f.ruleId)
+            for (const rule of ["okforest/d2-syntax", "okforest/mermaid-syntax", "okf/type"]) {
+              if (!rules.includes(rule)) throw new Error(`no ${rule} finding in ${process.env.REPORT}`)
+            }
+            console.log(`report ok: ${report.findings.length} findings`)
+          '

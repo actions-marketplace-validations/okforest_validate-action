@@ -1,0 +1,36 @@
+# Every dependency version is declared once here and referenced as `catalog:`
+# in package.json. `catalogMode: strict` (below) keeps it that way.
+catalog:
+  "@actions/core": ^3.0.1
+  "@actions/tool-cache": ^4.0.0
+  # Exact, not caret, per https://biomejs.dev/internals/versioning/.
+  "@biomejs/biome": 2.5.15
+  "@changesets/cli": ^3.0.3
+  # Exact: D2 is not bundled but downloaded at run time, pinned to this
+  # version's lockfile integrity in src/d2-pin.ts (`pnpm d2:pin` after a bump).
+  "@d2lang/d2": 0.1.34
+  "@okforest/okf": ^0.2.0
+  "@okforest/validate": ^0.2.0
+  "@types/node": ^26.6.5
+  "@vitest/coverage-v8": ^5.0.3
+  mermaid: ^12.1.0
+  tsdown: ^0.23.0
+  typescript: ^7.0.2
+  vitest: ^5.0.3
+
+# `strict` makes `pnpm add` / `pnpm update` write every dependency to the
+# catalog and reference it as `catalog:`, rejecting versions outside it, so
+# `pnpm update --latest` bumps only this file.
+catalogMode: strict
+
+# Supply-chain cooling-off gate, explicit so local and CI agree: only install
+# dependency versions at least 24h old. First-party @okforest packages are
+# excluded so a fresh release can be consumed immediately.
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - "@okforest/*"
+
+# Dependencies whose install/build scripts may run. pnpm blocks all others;
+# none are needed today. Add an entry, with a comment saying why, only when an
+# install requires it.
+allowBuilds: {}

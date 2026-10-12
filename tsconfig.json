@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "types": ["vitest/globals", "node"],
+    // mermaid's published .d.ts files import `type-fest`, which mermaid does
+    // not declare as a dependency; skip checking third-party declarations.
+    "skipLibCheck": true
+  },
+  "include": ["src", "test", "*.ts"]
+}

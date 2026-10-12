@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+# The generated bundle: hidden from diffs and language stats, checked by CI.
+dist/** -diff linguist-generated=true

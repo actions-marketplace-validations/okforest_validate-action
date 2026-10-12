@@ -1,0 +1,52 @@
+name: OKForest Validate
+description: Validate Open Knowledge Format (OKF) trees, with D2 and Mermaid diagram checks, annotations, and a job summary.
+author: Preneur LLC
+
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  path:
+    description: The tree's root folder, relative to the workspace.
+    required: false
+    default: .
+  fail-on:
+    description: >
+      Which findings fail the step: `error` (the default), `warning` (errors
+      or warnings), or `never` (report only).
+    required: false
+    default: error
+  diagrams:
+    description: >
+      Check D2 and Mermaid diagram syntax. D2 is downloaded from the npm
+      registry (about 32 MB, checksum-verified) only when the tree has a `d2`
+      block. Set to `false` to skip diagram checks.
+    required: false
+    default: "true"
+  annotations:
+    description: Annotate each finding on its file and line.
+    required: false
+    default: "true"
+  summary:
+    description: List every finding in the job summary.
+    required: false
+    default: "true"
+
+outputs:
+  ok:
+    description: "`true` when there are no errors (warnings and info allowed)."
+  errors:
+    description: The number of errors.
+  warnings:
+    description: The number of warnings.
+  infos:
+    description: The number of info findings.
+  report:
+    description: >
+      Path to the JSON report (the same document as `okforest validate
+      --format json`, schema version 1), for later steps or upload-artifact.
+
+runs:
+  using: node24
+  main: dist/index.js
