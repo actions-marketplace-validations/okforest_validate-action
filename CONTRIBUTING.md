@@ -26,7 +26,7 @@ build, and attaches the expected `dist/` to the failed run.
 |---|---|
 | `action.yml` | The action's inputs, outputs, and runtime (`node24`, `dist/index.js`). |
 | `src/main.ts` | The run: read the tree, validate, then outputs, annotations, the job summary, and pass or fail. |
-| `src/d2.ts`, `src/d2-pin.ts` | D2 downloaded on demand and checked against the pinned checksum. |
+| `src/d2.ts`, `src/d2-pin.ts` | D2 downloaded on demand and checked against the checksum `pnpm build` pins from the lockfile. |
 | `src/summary.ts`, `src/locations.ts` | The job summary, and workspace paths and links for findings. |
 | `dist/` | The generated bundle GitHub runs. Never edit by hand. |
 | `fixtures/clean`, `fixtures/broken` | Trees the CI self-test runs the action on, on Linux, macOS, and Windows. |
@@ -36,10 +36,13 @@ build, and attaches the expected `dist/` to the failed run.
 - **`@okforest/validate`** (the rules): bump it in `pnpm-workspace.yaml`,
   `pnpm install`, `pnpm build`, and update test expectations if the rules'
   findings changed.
-- **D2** is not bundled. The action downloads the `@d2lang/d2` version pinned
-  in `src/d2-pin.ts`, which `pnpm d2:pin` generates from `pnpm-lock.yaml`.
-  After bumping `@d2lang/d2` (or merging Dependabot's PR), run `pnpm d2:pin`;
-  `test/d2-pin.test.ts` fails until the pin matches the lockfile.
+- **D2** is not bundled; the action downloads it at run time. `pnpm build`
+  writes the `@d2lang/d2` version and its checksum from `pnpm-lock.yaml` into
+  `src/d2-pin.ts`, so upgrading it is the same as any other dependency: bump,
+  `pnpm install`, `pnpm build`, commit.
+- **Dependabot PRs** update `package.json` and the lockfile but not `dist/`,
+  so CI's `dist/` check fails on them. Check out the branch, run `pnpm
+  install && pnpm build`, and push.
 
 ## Releasing
 

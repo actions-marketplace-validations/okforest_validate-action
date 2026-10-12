@@ -16,13 +16,12 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "tsdown && node scripts/licenses.mjs",
+    "build": "node scripts/pin-d2.mjs && tsdown && node scripts/licenses.mjs",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "check": "biome check",
     "check:fix": "biome check --write",
-    "d2:pin": "node scripts/pin-d2.mjs",
     "release": "changeset git-tag"
   },
   "dependencies": {

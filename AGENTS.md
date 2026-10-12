@@ -11,7 +11,8 @@ outputs, annotations, the job summary, and the D2 download.
   `dist/`. Never edit `dist/` by hand.
 - Mermaid is bundled. D2 is never bundled or imported from `node_modules` at
   run time: `src/d2.ts` downloads the version pinned in `src/d2-pin.ts` and
-  verifies its checksum. Regenerate the pin with `pnpm d2:pin` after a bump.
+  verifies its checksum. `pnpm build` generates the pin from `pnpm-lock.yaml`;
+  never edit it by hand.
 - The JSON report comes from `toReport()` in `@okforest/validate`, so it is
   the same document as `okforest validate --format json`. Don't add fields
   here; change the shared report in okforest/cli.
