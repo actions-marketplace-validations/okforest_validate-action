@@ -12,8 +12,8 @@ It runs [`@okforest/validate`](https://github.com/okforest/cli/tree/main/package
 the same rules as `npx okforest validate`.
 
 ```yaml
-# .github/workflows/okf.yml
-name: OKF
+# .github/workflows/okforest-validate.yml
+name: OKForest Validate
 
 on:
   pull_request:
