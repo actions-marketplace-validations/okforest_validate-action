@@ -5,11 +5,6 @@ project matures.
 
 ## Next
 
-- **Dogfood:** validate `okforest/company-okf` with
-  `okforest/validate-action@v1`, and switch the `okforest init` template's
-  workflow (in okforest/cli) to use the action.
-- **Marketplace listing** for v1.0.0 (a checkbox on the release page; see
-  CONTRIBUTING.md).
 - **Immutable releases.** GitHub can make releases immutable (tags and assets
   locked once published), which protects users who pin `@v1.2.3`. Turn it on
   in the repository settings once the release flow has run once; the moving
