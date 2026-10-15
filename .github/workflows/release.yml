@@ -38,7 +38,7 @@ jobs:
       # already exists (every push after a release, and Dependabot merges).
       - name: Check whether this version is released
         id: version
-        if: steps.changesets.outputs.hasChangesets == 'false'
+        if: steps.changesets.outputs.has-changesets == 'false'
         run: |
           VERSION=$(jq -r .version package.json)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
