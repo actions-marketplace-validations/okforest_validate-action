@@ -6,13 +6,15 @@ rules live there; this repository only adapts them to GitHub: inputs,
 outputs, annotations, the job summary, and the D2 download.
 
 - Gates before any push: `pnpm build && pnpm test && pnpm typecheck && pnpm check`.
-- `dist/` is committed and is what GitHub runs: rebuild (`pnpm build`) and
-  commit it with every source or dependency change. CI fails on a stale
-  `dist/`. Never edit `dist/` by hand.
+- `dist/` is what GitHub runs, but it is never committed to `main`
+  (gitignored): the Release workflow builds it and commits it onto each
+  release tag only. CI builds it and runs the action on it. Never edit or
+  commit `dist/` by hand.
 - Mermaid is bundled. D2 is never bundled or imported from `node_modules` at
   run time: `src/d2.ts` downloads the version pinned in `src/d2-pin.ts` and
-  verifies its checksum. `pnpm build` generates the pin from `pnpm-lock.yaml`;
-  never edit it by hand.
+  verifies its checksum. `pnpm pin` (run first by build, test, and
+  typecheck) generates that gitignored file from `pnpm-lock.yaml`; never edit
+  it by hand.
 - The JSON report comes from `toReport()` in `@okforest/validate`, so it is
   the same document as `okforest validate --format json`. Don't add fields
   here; change the shared report in okforest/cli.
@@ -20,4 +22,6 @@ outputs, annotations, the job summary, and the D2 download.
   renaming one, or failing in new cases, needs a major version.
 - Examples use reserved domains (`acme.example`) and placeholder names.
 - Releases go through Changesets (`pnpm changeset`); tags are `v1.2.3` plus
-  a moving `v1`.
+  a moving `v1`, each on a release commit that adds `dist/` to the merged
+  commit (`.github/workflows/release.yml`). Dependency updates reach users
+  only with a changeset.

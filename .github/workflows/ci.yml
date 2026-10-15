@@ -31,21 +31,13 @@ jobs:
       # Separate steps so a failing check is obvious in the GitHub UI.
       - run: pnpm build
 
-      # GitHub runs the committed dist/ (there is no install step for an
-      # action), so it must be exactly what the build produces from main.
-      - name: Check dist/ is up to date
-        id: dist
-        run: |
-          if [ -n "$(git status --porcelain dist)" ]; then
-            echo "::error::dist/ is out of date. Run pnpm build and commit dist/."
-            git status --short dist
-            exit 1
-          fi
-      - if: failure() && steps.dist.outcome == 'failure'
-        uses: actions/upload-artifact@v7
+      # dist/ is not committed on main (the Release workflow builds it onto
+      # each release tag), so the self-test runs this build of it.
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
+          retention-days: 7
 
       - run: pnpm test:coverage
       - run: pnpm typecheck
@@ -57,9 +49,11 @@ jobs:
           files: coverage/lcov.info
           disable_search: true
 
-  # Run the action itself, from this commit, the way users do. The clean tree
-  # has a D2 block, so every OS downloads, verifies, and extracts D2.
+  # Run the action itself, from this commit and the check job's build of
+  # dist/, the way users run a release. The clean tree has a D2 block, so
+  # every OS downloads, verifies, and extracts D2.
   self-test:
+    needs: check
     strategy:
       fail-fast: false
       matrix:
@@ -67,6 +61,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
 
       - name: Validate a clean tree
         id: clean
