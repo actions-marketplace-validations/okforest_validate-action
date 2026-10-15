@@ -11,6 +11,9 @@ updates:
       interval: "weekly"
     cooldown:
       default-days: 1
+      # OKForest's own packages (okforest/cli) are proposed as soon as they're
+      # released, as pnpm's minimumReleaseAge exempts them too.
+      exclude: ["@okforest/*", "okforest"]
     # One PR a week. dist/ is built at release, so these pass CI; a changeset
     # ships them.
     groups:

@@ -42,7 +42,10 @@ commits that same build onto each release tag. The same goes for `src/d2-pin.ts`
 
 - **`@okforest/validate`** (the rules): bump it in `pnpm-workspace.yaml`,
   `pnpm install`, `pnpm build`, and update test expectations if the rules'
-  findings changed.
+  findings changed. **When an okforest/cli release changes rules, the parser,
+  or the report, follow it with a release here** (bump, plus a changeset), or
+  Action users keep the old rules. A cli release without such changes (like
+  0.2.2) can wait for the next one.
 - **D2** is not bundled; the action downloads it at run time. `pnpm build`
   writes the `@d2lang/d2` version and its checksum from `pnpm-lock.yaml` into
   `src/d2-pin.ts`, so upgrading it is the same as any other dependency.
