@@ -35812,7 +35812,7 @@ var require_public_api = /* @__PURE__ */ __commonJSMin(((exports) => {
 	exports.stringify = stringify;
 }));
 //#endregion
-//#region node_modules/.pnpm/@okforest+okf@0.2.0/node_modules/@okforest/okf/dist/tree-BkHJPYfm.mjs
+//#region node_modules/.pnpm/@okforest+okf@0.2.1/node_modules/@okforest/okf/dist/tree-BkHJPYfm.mjs
 var import_dist = (/* @__PURE__ */ __commonJSMin(((exports) => {
 	var composer = require_composer();
 	var Document = require_Document();
@@ -36346,7 +36346,7 @@ function readSettings(text) {
 	};
 }
 //#endregion
-//#region node_modules/.pnpm/@okforest+okf@0.2.0/node_modules/@okforest/okf/dist/node.mjs
+//#region node_modules/.pnpm/@okforest+okf@0.2.1/node_modules/@okforest/okf/dist/node.mjs
 /** Directories never walked: version control and installed packages. */
 const SKIPPED_DIRECTORIES = /* @__PURE__ */ new Set([".git", "node_modules"]);
 /**
@@ -36380,7 +36380,7 @@ async function readTreeFiles(root) {
 	return files;
 }
 //#endregion
-//#region node_modules/.pnpm/@okforest+validate@0.2.0_@d2lang+d2@0.1.34_mermaid@12.1.0/node_modules/@okforest/validate/dist/index.mjs
+//#region node_modules/.pnpm/@okforest+validate@0.2.1_@d2lang+d2@0.1.34_mermaid@12.2.0/node_modules/@okforest/validate/dist/index.mjs
 function toReport(result, context) {
 	const { findings, errors, warnings, infos, concepts, files, ok } = result;
 	return {
@@ -36409,7 +36409,7 @@ var Unchecked = class extends Error {};
 */
 const defaultDiagramLoaders = {
 	d2: () => importPeer("d2", () => import("@d2lang/d2")),
-	mermaid: () => importPeer("mermaid", () => import("./mermaid.core-Crvpr3Ev.js"))
+	mermaid: () => importPeer("mermaid", () => import("./mermaid.core-z8iSGnDk.js"))
 };
 const PACKAGES = {
 	d2: "@d2lang/d2",
@@ -39711,7 +39711,7 @@ async function validateTree(options) {
 	const report = toReport(await validate(await readTree(root), {
 		diagrams: options.diagrams ?? {
 			d2: d2Loader({ warn: (message) => warning(message) }),
-			mermaid: () => import("./mermaid.core-Crvpr3Ev.js")
+			mermaid: () => import("./mermaid.core-z8iSGnDk.js")
 		},
 		...inputs.diagrams ? {} : { severity: Object.fromEntries(DIAGRAM_RULES.map((id) => [id, "off"])) }
 	}), {
