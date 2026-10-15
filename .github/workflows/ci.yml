@@ -181,3 +181,15 @@ jobs:
           awk -v heading="## $VERSION" '$0 == heading { found = 1; next } found && /^## / { exit } found' \
             CHANGELOG.md > "$RUNNER_TEMP/notes.md"
           gh release create "v$VERSION" --verify-tag --title "v$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+
+      # Release immutability is on (Settings → Releases): published releases
+      # lock their tag. A warning, not a failure: the release is already out.
+      - name: Check the release is immutable
+        if: steps.version.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if [ "$(gh release view "v$VERSION" --json isImmutable --jq .isImmutable)" != "true" ]; then
+            echo "::warning::v$VERSION is not an immutable release. Is release immutability still on in Settings → Releases?"
+          fi

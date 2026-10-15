@@ -65,6 +65,14 @@ branch), tags that commit `v1.2.3`, moves the major tag (`v1`) to it, and
 creates the GitHub Release from the version's `CHANGELOG.md` section. Nothing
 is published to npm.
 
+**Immutable releases.** The repository has release immutability on (Settings →
+Releases), from v1.1.1: once a release is published, its tag (`v1.2.3`) can't
+be moved or deleted, so `@v1.2.3` always means the same code. Fix a bad
+release with a new patch release, not by moving its tag. Titles and notes can
+still be edited. The major tag (`v1`) is a plain tag, not a release, so the
+release job still moves it; the job warns if a new release didn't come out
+immutable.
+
 **Marketplace.** The Action is listed on the
 [GitHub Marketplace](https://github.com/marketplace/actions/okforest-validate),
 and each new release appears there on its own (v1.0.1 did). Only the first
