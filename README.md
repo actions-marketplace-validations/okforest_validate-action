@@ -99,3 +99,4 @@ to its line.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Licensed under [Apache 2.0](LICENSE);
 the bundled third-party licenses are in [dist/licenses.txt](dist/licenses.txt).
+OKForest™ is a trademark of Preneur LLC ([trademarks](TRADEMARKS.md)).
