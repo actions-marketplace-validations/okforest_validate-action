@@ -4,8 +4,8 @@ name: Release
 # "Version Packages" PR; merging THAT PR tags the release (v1.2.3), creates its
 # GitHub Release from CHANGELOG.md, and moves the major tag (v1) users pin to.
 # Nothing is published to npm: an action runs from this repository at a tag.
-# Listing a release on the GitHub Marketplace is a checkbox on the release
-# page (see CONTRIBUTING.md); GitHub offers no API for it.
+# The Action is listed on the GitHub Marketplace, where each new release
+# appears on its own (see CONTRIBUTING.md).
 on:
   push:
     branches: [main]

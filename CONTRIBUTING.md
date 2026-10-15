@@ -52,10 +52,12 @@ PR tags the release (`v1.2.3`), creates its GitHub Release from
 `CHANGELOG.md`, and moves the major tag (`v1`) to it. Nothing is published to
 npm.
 
-**Marketplace.** GitHub has no API for listing a release on the Marketplace.
-To list one, open the release on GitHub, choose **Edit**, tick **Publish this
-Action to the GitHub Marketplace**, and update the release. The first time,
-GitHub asks you to accept the Marketplace Developer Agreement.
+**Marketplace.** The Action is listed on the
+[GitHub Marketplace](https://github.com/marketplace/actions/okforest-validate),
+and each new release appears there on its own (v1.0.1 did). Only the first
+listing was manual, since GitHub has no API for it: open the release, choose
+**Edit**, tick **Publish this Action to the GitHub Marketplace**, accept the
+Marketplace Developer Agreement, and update the release.
 
 **Major versions.** A breaking change to inputs, outputs, or what fails the
 step needs a major version (`v2`): users pinned to `v1` keep getting 1.x.
