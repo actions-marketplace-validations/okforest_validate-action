@@ -2,3 +2,8 @@ node_modules/
 coverage/
 *.log
 .DS_Store
+# Generated, never committed: dist/ is built and committed onto each release
+# tag by the Release workflow; src/d2-pin.ts is written from pnpm-lock.yaml by
+# `pnpm pin`, which build, test, and typecheck run first.
+dist/
+src/d2-pin.ts

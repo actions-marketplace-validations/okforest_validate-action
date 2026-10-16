@@ -10,15 +10,22 @@ example-data rules. This file covers this repository.
     pnpm install
     pnpm build && pnpm test && pnpm typecheck && pnpm check
 
-All four gates must pass before a PR; CI runs the same commands. `pnpm
+All four gates must pass before a PR; CI runs the same commands. `main` is
+protected (the "Protect main" ruleset): changes land through pull requests
+once `check` and the three `self-test` jobs pass. Repository admins can
+bypass it, for small direct commits and for merging "Version Packages" PRs,
+whose checks never run (GitHub runs no workflows for PRs that a workflow
+opens). `pnpm
 install` fetches the pinned pnpm and Node versions automatically
 (`packageManager` and `devEngines` in `package.json`).
 
-**Commit `dist/` with every source change.** GitHub runs an action straight
-from the repository at the tag a workflow names, with no install or build
-step, so `dist/` is the code users run. `pnpm build` regenerates it (plus
-`dist/licenses.txt`); CI fails when the committed `dist/` differs from a fresh
-build, and attaches the expected `dist/` to the failed run.
+**Never commit `dist/`.** GitHub runs an action straight from the repository
+at the tag a workflow names, with no install or build step, so `dist/` is the
+code users run, but it only needs to exist on release tags. It is gitignored
+on `main`: `pnpm build` writes it (plus `dist/licenses.txt`) for local runs and
+CI, whose self-test runs the action on that build, and CI's release job
+commits that same build onto each release tag. The same goes for `src/d2-pin.ts`, which
+`pnpm pin` writes from the lockfile.
 
 ## Layout
 
@@ -26,36 +33,52 @@ build, and attaches the expected `dist/` to the failed run.
 |---|---|
 | `action.yml` | The action's inputs, outputs, and runtime (`node24`, `dist/index.js`). |
 | `src/main.ts` | The run: read the tree, validate, then outputs, annotations, the job summary, and pass or fail. |
-| `src/d2.ts`, `src/d2-pin.ts` | D2 downloaded on demand and checked against the checksum `pnpm build` pins from the lockfile. |
+| `src/d2.ts`, `src/d2-pin.ts` | D2 downloaded on demand and checked against the checksum `pnpm pin` writes from the lockfile (gitignored). |
 | `src/summary.ts`, `src/locations.ts` | The job summary, and workspace paths and links for findings. |
-| `dist/` | The generated bundle GitHub runs. Never edit by hand. |
+| `dist/` | The generated bundle GitHub runs: gitignored, built by `pnpm build`, committed only onto release tags. |
 | `fixtures/clean`, `fixtures/broken` | Trees the CI self-test runs the action on, on Linux, macOS, and Windows. |
 
 ## Updating dependencies
 
 - **`@okforest/validate`** (the rules): bump it in `pnpm-workspace.yaml`,
   `pnpm install`, `pnpm build`, and update test expectations if the rules'
-  findings changed.
+  findings changed. **When an okforest/cli release changes rules, the parser,
+  or the report, follow it with a release here** (bump, plus a changeset), or
+  Action users keep the old rules. A cli release without such changes (like
+  0.2.2) can wait for the next one.
 - **D2** is not bundled; the action downloads it at run time. `pnpm build`
   writes the `@d2lang/d2` version and its checksum from `pnpm-lock.yaml` into
-  `src/d2-pin.ts`, so upgrading it is the same as any other dependency: bump,
-  `pnpm install`, `pnpm build`, commit.
-- **Dependabot PRs** update `package.json` and the lockfile but not `dist/`,
-  so CI's `dist/` check fails on them. Check out the branch, run `pnpm
-  install && pnpm build`, and push.
+  `src/d2-pin.ts`, so upgrading it is the same as any other dependency.
+- **Dependabot** opens one grouped PR a week for npm updates; it passes CI like
+  any other. Merging it releases nothing: add a changeset when the update
+  should reach users.
 
 ## Releasing
 
 Releases go through Changesets: add a changeset (`pnpm changeset`) with your
 change, and merging it to `main` opens a "Version Packages" PR. Merging that
-PR tags the release (`v1.2.3`), creates its GitHub Release from
-`CHANGELOG.md`, and moves the major tag (`v1`) to it. Nothing is published to
-npm.
+PR (an admin bypass, as above) releases the version. CI runs on the merged
+commit, and only when `check` and every `self-test` pass does its release job
+run: it commits the `dist/` artifact that the self-test just ran on Linux,
+macOS, and Windows (not a new build) on top of the merged commit (on no
+branch), tags that commit `v1.2.3`, moves the major tag (`v1`) to it, and
+creates the GitHub Release from the version's `CHANGELOG.md` section. Nothing
+is published to npm.
 
-**Marketplace.** GitHub has no API for listing a release on the Marketplace.
-To list one, open the release on GitHub, choose **Edit**, tick **Publish this
-Action to the GitHub Marketplace**, and update the release. The first time,
-GitHub asks you to accept the Marketplace Developer Agreement.
+**Immutable releases.** The repository has release immutability on (Settings →
+Releases), from v1.1.1: once a release is published, its tag (`v1.2.3`) can't
+be moved or deleted, so `@v1.2.3` always means the same code. Fix a bad
+release with a new patch release, not by moving its tag. Titles and notes can
+still be edited. The major tag (`v1`) is a plain tag, not a release, so the
+release job still moves it; the job warns if a new release didn't come out
+immutable.
+
+**Marketplace.** The Action is listed on the
+[GitHub Marketplace](https://github.com/marketplace/actions/okforest-validate),
+and each new release appears there on its own (v1.0.1 did). Only the first
+listing was manual, since GitHub has no API for it: open the release, choose
+**Edit**, tick **Publish this Action to the GitHub Marketplace**, accept the
+Marketplace Developer Agreement, and update the release.
 
 **Major versions.** A breaking change to inputs, outputs, or what fails the
 step needs a major version (`v2`): users pinned to `v1` keep getting 1.x.

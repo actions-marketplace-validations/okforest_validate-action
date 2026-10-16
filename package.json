@@ -1,6 +1,6 @@
 {
   "name": "validate-action",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "private": true,
   "description": "GitHub Action that validates Open Knowledge Format (OKF) v0.2 trees with OKForest: annotations on the pull request, a job summary, and a JSON report.",
   "license": "Apache-2.0",
@@ -17,12 +17,12 @@
   },
   "scripts": {
     "build": "node scripts/pin-d2.mjs && tsdown && node scripts/licenses.mjs",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit",
+    "pin": "node scripts/pin-d2.mjs",
+    "test": "pnpm pin && vitest run",
+    "test:coverage": "pnpm pin && vitest run --coverage",
+    "typecheck": "pnpm pin && tsc --noEmit",
     "check": "biome check",
-    "check:fix": "biome check --write",
-    "release": "changeset git-tag"
+    "check:fix": "biome check --write"
   },
   "dependencies": {
     "@actions/core": "catalog:",

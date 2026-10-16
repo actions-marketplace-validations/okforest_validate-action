@@ -1,5 +1,29 @@
 # validate-action
 
+## 1.2.0
+
+### Minor Changes
+
+- 70e7f4c: Bundles `@okforest/validate` 0.4.0: a `.okforest/tree.yml` file is now reported as an error (only `.okforest/tree.yaml` is read, so its settings were silently ignored), and the new `okforest/tree-yaml-keys` rule warns about settings OKForest doesn't know, such as a misspelled key. Every setting is described at https://www.okforest.ai/docs/tree-settings/.
+
+## 1.1.0
+
+### Minor Changes
+
+- e3d24f5: Findings link to their rule's documentation on www.okforest.ai: the job summary's Rule column links each rule's page, each annotation ends with it, and each finding in the JSON report carries `docs`, its URL. Bundles `@okforest/validate` 0.3.0.
+
+## 1.0.3
+
+### Patch Changes
+
+- e7b3556: Releases ship the exact build CI tested: the release runs only after every check and the self-test on Linux, macOS, and Windows pass on the merged commit, and tags that same `dist/`. The action itself is unchanged.
+
+## 1.0.2
+
+### Patch Changes
+
+- 9219eec: Releases are now built from source by the Release workflow: `dist/` is committed only onto each release tag, not to `main`. The action itself is unchanged.
+
 ## 1.0.1
 
 ### Patch Changes

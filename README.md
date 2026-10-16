@@ -89,6 +89,11 @@ GitHub keeps at most 10 error, 10 warning, and 10 notice (info) annotations
 per step, and 50 per job. The job summary always lists every finding, linked
 to its line.
 
+Each finding names its rule, which links to the rule's page on
+[www.okforest.ai/docs/rules](https://www.okforest.ai/docs/rules/): from the
+job summary's Rule column, at the end of each annotation, and as `docs` on
+each finding in the JSON report.
+
 ## Versions
 
 `okforest/validate-action@v1` follows the latest 1.x release. Pin a release
@@ -98,5 +103,6 @@ to its line.
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Licensed under [Apache 2.0](LICENSE);
-the bundled third-party licenses are in [dist/licenses.txt](dist/licenses.txt).
+the bundled third-party licenses are in each release's `dist/licenses.txt`
+([latest](https://github.com/okforest/validate-action/blob/v1/dist/licenses.txt)).
 OKForest™ is a trademark of Preneur LLC ([trademarks](TRADEMARKS.md)).
