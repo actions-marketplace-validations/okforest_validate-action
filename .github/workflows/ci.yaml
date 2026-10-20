@@ -22,7 +22,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       # One step for the whole toolchain: installs pnpm (version from the
       # "packageManager" field), Node (from "devEngines.runtime"), restores the
@@ -64,7 +64,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - uses: actions/download-artifact@v8
         with:
@@ -123,7 +123,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - uses: pnpm/setup@v3
         with:
